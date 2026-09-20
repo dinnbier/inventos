@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Archivo de Inventos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#10213B;
+  --ink-2:#0B1830;
+  --paper:#F3EBDA;
+  --paper-2:#EAE0C9;
+  --brass:#B4894A;
+  --brass-dark:#8C6A36;
+  --line:#3A5273;
+  --line-soft:#26375A;
+  --correct:#3F6B52;
+  --correct-bg:#E3EEE5;
+  --wrong:#A84432;
+  --wrong-bg:#F4E3DD;
+  --text-on-paper:#2A2117;
+  --text-soft-on-paper:#6B5F4C;
+  --text-on-ink:#DCE3EE;
+  --text-soft-on-ink:#8AA0C2;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){ --scheme:light; }
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{
+  margin:0;
+  min-height:100%;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(180,137,74,0.10), transparent 45%),
+    radial-gradient(circle at 85% 85%, rgba(180,137,74,0.08), transparent 40%),
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(255,255,255,0.028) 27px, rgba(255,255,255,0.028) 28px),
+    repeating-linear-gradient(90deg, transparent, transparent 27px, rgba(255,255,255,0.028) 27px, rgba(255,255,255,0.028) 28px),
+    var(--ink);
+  color:var(--text-on-ink);
+  font-family:'Work Sans', system-ui, sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:28px 16px 48px;
+}
+
+.top{
+  width:100%;
+  max-width:640px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:22px;
+}
+.brand{display:flex; flex-direction:column; gap:2px;}
+.brand .eyebrow{
+  font-size:11.5px;
+  letter-spacing:.04em;
+  color:var(--brass);
+  font-weight:600;
+}
+.brand h1{
+  font-family:'Fraunces', serif;
+  font-weight:600;
+  font-size:clamp(24px,5vw,32px);
+  margin:0;
+  line-height:1.05;
+  color:var(--text-on-ink);
+}
+.score{
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+.score .num{
+  font-family:'Fraunces', serif;
+  font-size:26px;
+  font-weight:600;
+  color:var(--text-on-ink);
+}
+.score .lbl{
+  display:block;
+  font-size:10.5px;
+  color:var(--text-soft-on-ink);
+  letter-spacing:.03em;
+}
+
+.tabs{
+  width:100%;
+  max-width:640px;
+  display:flex;
+  gap:6px;
+  margin-bottom:14px;
+}
+.tab{
+  flex:1;
+  appearance:none;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--text-soft-on-ink);
+  font-family:'Work Sans', sans-serif;
+  font-size:14px;
+  font-weight:600;
+  padding:11px 10px;
+  border-radius:9px 9px 0 0;
+  cursor:pointer;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.tab:hover{color:var(--text-on-ink); border-color:var(--brass);}
+.tab.active{
+  background:var(--paper);
+  color:var(--text-on-paper);
+  border-color:var(--paper);
+}
+.tab:focus-visible{outline:2px solid var(--brass); outline-offset:2px;}
+
+.card{
+  width:100%;
+  max-width:640px;
+  background:var(--paper);
+  border-radius:4px 4px 14px 14px;
+  box-shadow:0 24px 50px -18px rgba(0,0,0,0.55), 0 2px 0 rgba(0,0,0,0.15);
+  position:relative;
+  overflow:hidden;
+  border-top:5px solid var(--brass);
+}
+.card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(58,82,115,0.05) 31px, rgba(58,82,115,0.05) 32px);
+}
+.card-inner{
+  position:relative;
+  padding:28px 26px 26px;
+}
+
+.card-meta{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+.stamp{
+  font-family:'Fraunces', serif;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.06em;
+  color:var(--brass-dark);
+  border:1.5px solid var(--brass);
+  padding:4px 10px;
+  border-radius:20px;
+  transform:rotate(-2deg);
+}
+.author{
+  font-size:11.5px;
+  color:var(--text-soft-on-paper);
+  font-style:italic;
+  text-align:right;
+}
+
+.prompt-label{
+  font-size:13px;
+  color:var(--text-soft-on-paper);
+  margin:0 0 6px;
+}
+.invento{
+  font-family:'Fraunces', serif;
+  font-weight:600;
+  font-size:clamp(28px,6.5vw,40px);
+  line-height:1.08;
+  color:var(--text-on-paper);
+  margin:0 0 22px;
+}
+
+/* select mode */
+.options{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.opt{
+  appearance:none;
+  border:1.5px solid #C9BB9C;
+  background:#FBF7EE;
+  color:var(--text-on-paper);
+  font-family:'Work Sans', sans-serif;
+  font-size:19px;
+  font-weight:600;
+  padding:16px 10px;
+  border-radius:9px;
+  cursor:pointer;
+  transition:transform .1s ease, border-color .15s ease, background .15s ease;
+  font-variant-numeric:tabular-nums;
+}
+.opt:hover:not(:disabled){border-color:var(--brass); transform:translateY(-1px);}
+.opt:focus-visible{outline:2px solid var(--brass-dark); outline-offset:2px;}
+.opt:disabled{cursor:default;}
+.opt.is-correct{background:var(--correct-bg); border-color:var(--correct); color:var(--correct);}
+.opt.is-wrong{background:var(--wrong-bg); border-color:var(--wrong); color:var(--wrong);}
+.opt.is-muted{opacity:.5;}
+
+/* type mode */
+.type-row{
+  display:flex;
+  gap:10px;
+}
+.type-row input{
+  flex:1;
+  min-width:0;
+  border:1.5px solid #C9BB9C;
+  background:#FBF7EE;
+  border-radius:9px;
+  padding:14px 14px;
+  font-family:'Work Sans', sans-serif;
+  font-size:19px;
+  font-weight:600;
+  color:var(--text-on-paper);
+  font-variant-numeric:tabular-nums;
+}
+.type-row input:focus-visible{outline:2px solid var(--brass-dark); outline-offset:1px;}
+.type-row input.is-correct{border-color:var(--correct); background:var(--correct-bg); color:var(--correct);}
+.type-row input.is-wrong{border-color:var(--wrong); background:var(--wrong-bg); color:var(--wrong);}
+.btn{
+  appearance:none;
+  border:none;
+  background:var(--ink);
+  color:var(--paper);
+  font-family:'Work Sans', sans-serif;
+  font-weight:600;
+  font-size:16px;
+  padding:0 22px;
+  border-radius:9px;
+  cursor:pointer;
+  transition:background .15s ease;
+}
+.btn:hover{background:var(--ink-2);}
+.btn:focus-visible{outline:2px solid var(--brass); outline-offset:2px;}
+.btn:disabled{opacity:.45; cursor:default;}
+
+.reveal{
+  margin-top:20px;
+  padding-top:18px;
+  border-top:1px dashed #C9BB9C;
+  display:none;
+}
+.reveal.show{display:block;}
+.reveal-head{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  margin-bottom:8px;
+}
+.reveal-verdict{
+  font-family:'Fraunces', serif;
+  font-weight:600;
+  font-size:19px;
+}
+.reveal-verdict.ok{color:var(--correct);}
+.reveal-verdict.bad{color:var(--wrong);}
+.reveal-year{
+  font-size:15px;
+  color:var(--text-soft-on-paper);
+}
+.reveal-year b{color:var(--text-on-paper); font-variant-numeric:tabular-nums;}
+.reveal-fact{
+  font-size:15px;
+  line-height:1.55;
+  color:#463C2E;
+  font-style:italic;
+  margin:8px 0 0;
+}
+.reveal-fact.empty{color:var(--text-soft-on-paper); font-style:normal;}
+
+.next-row{
+  margin-top:20px;
+  display:flex;
+  justify-content:flex-end;
+}
+.next-btn{
+  appearance:none;
+  border:1.5px solid var(--ink);
+  background:var(--ink);
+  color:var(--paper);
+  font-family:'Work Sans', sans-serif;
+  font-weight:600;
+  font-size:15px;
+  padding:11px 20px;
+  border-radius:9px;
+  cursor:pointer;
+  transition:background .15s ease;
+  display:none;
+}
+.next-btn.show{display:inline-flex; align-items:center; gap:6px;}
+.next-btn:hover{background:var(--ink-2);}
+.next-btn:focus-visible{outline:2px solid var(--brass); outline-offset:2px;}
+
+.footnote{
+  max-width:640px;
+  width:100%;
+  text-align:center;
+  color:var(--text-soft-on-ink);
+  font-size:12px;
+  margin-top:18px;
+  line-height:1.5;
+}
+
+@media (max-width:420px){
+  .options{grid-template-columns:1fr;}
+  .type-row{flex-direction:column;}
+  .btn{padding:13px 22px;}
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="brand">
+    <span class="eyebrow">CLASE DE TECNOLOGÍA · ARCHIVO DE PATENTES</span>
+    <h1>Archivo de Inventos</h1>
+  </div>
+  <div class="score">
+    <span class="num" id="scoreNum">0 / 0</span>
+    <span class="lbl">aciertos</span>
+  </div>
+</div>
+
+<div class="tabs" role="tablist" aria-label="Modo de juego">
+  <button class="tab active" id="tabChoose" role="tab" aria-selected="true">Elegir fecha</button>
+  <button class="tab" id="tabType" role="tab" aria-selected="false">Escribir fecha</button>
+</div>
+
+<div class="card">
+  <div class="card-inner">
+    <div class="card-meta">
+      <span class="stamp" id="stampId">Nº —</span>
+      <span class="author" id="authorTag">investigado por —</span>
+    </div>
+
+    <p class="prompt-label">¿En qué año se inventó...?</p>
+    <h2 class="invento" id="inventoName">Cargando…</h2>
+
+    <div id="chooseMode">
+      <div class="options" id="optionsGrid"></div>
+    </div>
+
+    <div id="typeMode" style="display:none;">
+      <div class="type-row">
+        <input id="typeInput" type="text" inputmode="numeric" placeholder="Escribe el año, p. ej. 1969" autocomplete="off">
+        <button class="btn" id="checkBtn">Comprobar</button>
+      </div>
+    </div>
+
+    <div class="reveal" id="reveal">
+      <div class="reveal-head">
+        <span class="reveal-verdict" id="verdict"></span>
+        <span class="reveal-year">Año correcto: <b id="correctYear"></b></span>
+      </div>
+      <p class="reveal-fact" id="fact"></p>
+    </div>
+
+    <div class="next-row">
+      <button class="next-btn" id="nextBtn">Siguiente invento →</button>
+    </div>
+  </div>
+</div>
+
+<p class="footnote">Las preguntas y los datos curiosos proceden del trabajo de investigación de la clase sobre la historia de los inventos.</p>
+
+<script>
+const CARDS = [{"id": "INV001", "invento": "Tarjeta de crédito", "correcta": "1951", "d1": "1983", "d2": "1999", "d3": "2004", "dato": "Frank McNamara, fundador de Diners Club, cuenta que se le ocurrió la idea en 1949 cuando cenó en un restaurante de Nueva York y se dio cuenta de que había olvidado la cartera. Tuvo que llamar a su esposa para que fuera a pagar la cuenta. Avergonzado, decidió crear un sistema de pago que no dependiera de llevar dinero en efectivo encima.", "alumno": "Alberto Pérez"}, {"id": "INV002", "invento": "play station", "correcta": "1994", "d1": "1991", "d2": "1995", "d3": "1989", "dato": "Sony y Nintendo iban a crear una consola juntas, pero el acuerdo terminó y Sony creó la PlayStation.", "alumno": "Luis Montanchez"}, {"id": "INV003", "invento": "coche eléctrico", "correcta": "1832", "d1": "1987", "d2": "2006", "d3": "1957", "dato": "se usaron baterias que no se podían recargar", "alumno": "Rafael Izquierdo"}, {"id": "INV004", "invento": "Bombilla led", "correcta": "1962", "d1": "1879", "d2": "1906", "d3": "2012", "dato": "Se usaron por su capacidad de tener una duración tan larga", "alumno": "Luis Montanchez"}, {"id": "INV005", "invento": "caldera", "correcta": "1 a.C", "d1": "6 d.C", "d2": "1324", "d3": "3 a.C", "dato": "", "alumno": "Marta Pérez"}, {"id": "INV006", "invento": "Pantalla táctil", "correcta": "1965", "d1": "1958", "d2": "1973", "d3": "1980", "dato": "Fue inventada por Eric Arthur Jonhson, de Inglaterra", "alumno": "Inés Cuesta"}, {"id": "INV007", "invento": "Motor de combustión", "correcta": "1862", "d1": "1934", "d2": "1857", "d3": "1847", "dato": "", "alumno": "Mauro Valiente"}, {"id": "INV008", "invento": "Locomotora", "correcta": "1829", "d1": "1836", "d2": "1924", "d3": "1913", "dato": "", "alumno": "Max Solsona"}, {"id": "INV009", "invento": "Cámara digital", "correcta": "1975", "d1": "1969", "d2": "1981", "d3": "1985", "dato": "La primera cámara digital pesaba casi cuatro kilos.", "alumno": "Aitana Fernández"}, {"id": "INV010", "invento": "Internet", "correcta": "1970", "d1": "1983", "d2": "1989", "d3": "1991", "dato": "Internet no nació para crear redes sociales ni para navegar por páginas. Uno de sus principales antecedentes, ARPANET, se creó para conectar ordenadores de centros de investigación. La World Wide Web llegó después.", "alumno": "Mauro Valiente"}, {"id": "INV011", "invento": "aspiradora eléctrica", "correcta": "1901", "d1": "1965", "d2": "1999", "d3": "1930", "dato": "era tan grande que algunos modelos tenían que ser transportados en carros tirados por caballos.", "alumno": "Nico Oller"}, {"id": "INV012", "invento": "Fotografía", "correcta": "1826", "d1": "1850", "d2": "1819", "d3": "1833", "dato": "La inventó Jospeh Nicéphore Niépce y la imgaen tardo 8 horas en capturarse", "alumno": "Zoe Barbero"}, {"id": "INV013", "invento": "telescopio", "correcta": "1607", "d1": "1710", "d2": "1742", "d3": "1684", "dato": "se dice que se pudo descubrir un español", "alumno": "Marcos Sánchez"}, {"id": "INV014", "invento": "imanes", "correcta": "1730", "d1": "1798", "d2": "1819", "d3": "1745", "dato": "", "alumno": "Marcos Sánchez"}, {"id": "INV015", "invento": "Nevera doméstica eléctrica", "correcta": "1921", "d1": "1909", "d2": "1913", "d3": "1923", "dato": "Primero la inventó Fred W. Wolf y tres años después Henry Joy compró los derechos de la nevera y la mejoró.", "alumno": "Emma Martí"}, {"id": "INV016", "invento": "helicóptero moderno", "correcta": "1920", "d1": "1939", "d2": "1986", "d3": "2000", "dato": "El inventor quería un vehiculo que pudiera despegar y aterrizar en vertical", "alumno": "Nico Oller"}, {"id": "INV017", "invento": "Gafas de realidad virtual", "correcta": "1968", "d1": "1980", "d2": "1987", "d3": "1990", "dato": "Creadas por Ivan Sutherland y", "alumno": "Olivia Hernández"}, {"id": "INV018", "invento": "paneles solares", "correcta": "2000", "d1": "2005", "d2": "1998", "d3": "2003", "dato": "Permitieron aprovechar la energía solar para cargar pequeños dispositivos electrónicos.", "alumno": "Mario Fort"}, {"id": "INV019", "invento": "Imprension 3D", "correcta": "1984", "d1": "1995", "d2": "1996", "d3": "1994", "dato": "Chuck Hull desarrolló la estereolitografía, una de las primeras tecnologías de impresión 3D.", "alumno": "Mario Fort"}, {"id": "INV020", "invento": "La radio", "correcta": "1895", "d1": "1893", "d2": "1890", "d3": "1894", "dato": "Permitió transmitir información sin cables. Lo invento Guglielmo Marconi es reconocido por desarrollar un sistema práctico de radiotelegrafía. Nikola Tesla y otros científicos también hicieron aportes importantes", "alumno": "Mario Fort"}, {"id": "INV021", "invento": "Patinete eléctrico", "correcta": "1915", "d1": "1895", "d2": "1996", "d3": "2018", "dato": "Los primeros usaban tanto gasolina como electricidad pero luego pasaron a ser electricos y se popularizaron en 2018", "alumno": "Luis Montanchez"}, {"id": "INV022", "invento": "Prótesis mioeléctrica", "correcta": "1960", "d1": "1956", "d2": "1987", "d3": "1972", "dato": "Aleksandr Kobrinski y su equipo desarrollaron las primeras manos mioeléctricas clínicamente utilizables que detectaban señales eléctricas producidas por los músculos.", "alumno": "Laura Candela"}, {"id": "INV023", "invento": "Cajero automático", "correcta": "1967", "d1": "1987", "d2": "2001", "d3": "1993", "dato": "El primer cajero automático se instaló en Londres y funcionaba con cheques especiales, no con tarjetas.", "alumno": "Diego Bautista"}, {"id": "INV024", "invento": "primer videojuego de consola", "correcta": "1989", "d1": "1968", "d2": "1973", "d3": "1972", "dato": "La Magnavox Odyssey fue la primera consola doméstica. ¡Ni siquiera podía mostrar colores!", "alumno": "Nacho Claramonte"}, {"id": "INV025", "invento": "la vacuna contra el cáncer", "correcta": "1796", "d1": "1814", "d2": "1775", "d3": "1850", "dato": "La inventó Edward Jenner y tienen que hacer una vacuna diferente para cada paciente y tarda en fabricarse entre 30 y 45 dias", "alumno": "Zoe Barbero"}, {"id": "INV026", "invento": "avion", "correcta": "1903", "d1": "1980", "d2": "2000", "d3": "1873", "dato": "", "alumno": "Pedro Gavilan"}, {"id": "INV027", "invento": "La radio", "correcta": "1895", "d1": "1881", "d2": "1907", "d3": "1905", "dato": "Permitió transmitir información sin cables. Lo invento Guglielmo Marconi es reconocido por desarrollar un sistema práctico de radiotelegrafía. Nikola Tesla y otros científicos también hicieron aportes importantes", "alumno": "Pedro Mayor"}, {"id": "INV028", "invento": "Ordenador electrónico", "correcta": "1946", "d1": "1931", "d2": "1948", "d3": "1937", "dato": "ENIAC fue uno de los primeros ordenadores electrónicos de propósito general.", "alumno": "Álex Miralles"}, {"id": "INV029", "invento": "Imperdible", "correcta": "1849", "d1": "1900", "d2": "1894", "d3": "1890", "dato": "", "alumno": "Mario Gomez"}, {"id": "INV030", "invento": "televisión", "correcta": "1926", "d1": "1970", "d2": "1957", "d3": "1965", "dato": "Hunt lo inventó para pagar una deuda de 15 dólares.", "alumno": "Pedro Gavilan"}, {"id": "INV031", "invento": "bicicleta", "correcta": "1817", "d1": "1794", "d2": "1826", "d3": "1812", "dato": "La primera bicicleta no tenía pedales. Se impulsaba apoyando los pies en el suelo y se conocía como draisiana.", "alumno": "Antonio López"}, {"id": "INV032", "invento": "termómetro", "correcta": "1612", "d1": "1614", "d2": "1633", "d3": "1605", "dato": "Su termómetro era muy diferente de los actuales: era un instrumento grande y poco práctico, y fue uno de los primeros diseñados para medir la temperatura del cuerpo humano.", "alumno": "Antonio López"}, {"id": "INV033", "invento": "EL reloj mecánico", "correcta": "1755", "d1": "1524", "d2": "1615", "d3": "1520", "dato": "Aunque los egipcios inventaron los primeros relojes de agua y de sol cerca del año 1500 a.C el primer reloj mecánico lo inventó Peter Henlein en el año 1520.", "alumno": "Emma Martí"}, {"id": "INV034", "invento": "las gafas para la vista", "correcta": "1286", "d1": "1358", "d2": "1490", "d3": "1123", "dato": "los monasterios guardaron la fabricación de las lentes como un secreto de Estado durante más de 20 años. Si querías ver bien, tenías que acudir obligatoriamente a ellos", "alumno": "Zoe Barbero"}, {"id": "INV035", "invento": "Pajita", "correcta": "1937", "d1": "1800", "d2": "1940", "d3": "1935", "dato": "La diseñó para que su hija pudiera beber con más facilidad desde un vaso.", "alumno": "Mario Gomez"}, {"id": "INV036", "invento": "El automóvil moderno", "correcta": "1886", "d1": "1872", "d2": "1898", "d3": "1799", "dato": "Benz creó un vehículo impulsado por un motor de gasolina. Lo inventó Carl Benz, creador del Benz Patent-Motorwagen en 1885-1886.", "alumno": "Pedro Mayor"}, {"id": "INV037", "invento": "La anestesia con éter", "correcta": "1846", "d1": "1833", "d2": "1858", "d3": "1900", "dato": "Hizo posibles operaciones quirúrgicas con menos dolor. Lo inventó William T. G. Morton, quien la demostró públicamente en 1846.", "alumno": "Pedro Mayor"}, {"id": "INV038", "invento": "fonografo", "correcta": "1878", "d1": "1867", "d2": "1863", "d3": "1873", "dato": "fue el primer aparato en reproducir y grabar música", "alumno": "Rafael Izquierdo"}, {"id": "INV039", "invento": "pantalla digital", "correcta": "1991", "d1": "1878", "d2": "1788", "d3": "1989", "dato": "al principio eran solo para empresas más relevantes", "alumno": "Rafael Izquierdo"}, {"id": "INV040", "invento": "impresora 3D", "correcta": "1984", "d1": "1972", "d2": "1943", "d3": "1980", "dato": "Las primeras impresoras 3D utilizaban una técnica llamada estereolitografía, que creaba objetos capa por capa utilizando luz ultravioleta y resina líquida.", "alumno": "Antonio López"}, {"id": "INV041", "invento": "Radio", "correcta": "1895", "d1": "1900", "d2": "1878", "d3": "1896", "dato": "", "alumno": "Mauro Valiente"}, {"id": "INV042", "invento": "Abrelatas", "correcta": "1855", "d1": "1845", "d2": "1856", "d3": "1866", "dato": "Las primeras latas eran tan gruesas que se necesitaba una herramienta especial para abrirla", "alumno": "Mario Gomez"}, {"id": "INV043", "invento": "calculadora electrónica", "correcta": "1960", "d1": "1943", "d2": "1989", "d3": "1999", "dato": "", "alumno": "Nico Oller"}, {"id": "INV044", "invento": "AK-47", "correcta": "1947", "d1": "1914", "d2": "1933", "d3": "1944", "dato": "El ak-47 la inventó un soldado ruso en la segunda guerra", "alumno": "Pedro Mayor"}, {"id": "INV045", "invento": "Realidad virtual moderna", "correcta": "1968", "d1": "1976", "d2": "1981", "d3": "1969", "dato": "Uno de los primeros sistemas de realidad virtual se llamó “La Espada de Damocles” y era tan pesado que tenía que estar sujeto al techo.", "alumno": "Desconocido"}, {"id": "INV046", "invento": "Disquete", "correcta": "1995", "d1": "1960", "d2": "1938", "d3": "1971", "dato": "Los primeros disquetes tenían unos 20 cm de diámetro y podían almacenar poquísima información comparados con hoy.", "alumno": "Nacho Claramonte"}, {"id": "INV047", "invento": "nevera", "correcta": "1876", "d1": "1767", "d2": "1878", "d3": "2000", "dato": "Antes usaban hielo", "alumno": "Rafael Izquierdo"}, {"id": "INV048", "invento": "Ratón de ordenador", "correcta": "1964", "d1": "1976", "d2": "1946", "d3": "1987", "dato": "", "alumno": "Max Solsona"}, {"id": "INV049", "invento": "Mechero", "correcta": "1823", "d1": "1820", "d2": "1830", "d3": "1825", "dato": "", "alumno": "Álex Miralles"}, {"id": "INV050", "invento": "Resonancia magnética", "correcta": "1977", "d1": "2001", "d2": "1979", "d3": "2002", "dato": "La primera imagen de una persona con resonancia magnética tardó casi 5 horas en obtenerse; hoy puede hacerse en cuestión de minutos.", "alumno": "Laura Candela"}, {"id": "INV051", "invento": "Semáforos eléctricos", "correcta": "1890", "d1": "1910", "d2": "1914", "d3": "1895", "dato": "El primer semáforo eléctrico fue inventado por", "alumno": "Emma Martí"}, {"id": "INV052", "invento": "urbason", "correcta": "1957", "d1": "1978", "d2": "1945", "d3": "2006", "dato": "se fabricaba usando hongos comunes de moho", "alumno": "Jaime Dieng"}, {"id": "INV053", "invento": "cargador inalámbrico", "correcta": "1891", "d1": "2008", "d2": "2012", "d3": "2023", "dato": "", "alumno": "Zoe Barbero"}, {"id": "INV054", "invento": "Reconocimiento de voz", "correcta": "1978", "d1": "1962", "d2": "1976", "d3": "1960", "dato": "IBM creó Shoebox, una máquina capaz de reconocer unas 16 palabras habladas y hacer cálculos sencillos.", "alumno": "Desconocido"}, {"id": "INV055", "invento": "bicicleta", "correcta": "1817", "d1": "1920", "d2": "1914", "d3": "1902", "dato": "", "alumno": "Pedro Gavilan"}, {"id": "INV056", "invento": "bluetooth", "correcta": "1999", "d1": "1994", "d2": "2001", "d3": "1990", "dato": "", "alumno": "Marta Pérez"}, {"id": "INV057", "invento": "auriculares inalámbricos", "correcta": "1910", "d1": "1897", "d2": "1921", "d3": "1951", "dato": "Fueron inventados por Nathaniel Baldwin", "alumno": "Inés Cuesta"}, {"id": "INV058", "invento": "Televisión", "correcta": "1925", "d1": "1930", "d2": "1927", "d3": "1951", "dato": "", "alumno": "Álex Miralles"}, {"id": "INV059", "invento": "ecografías", "correcta": "1956", "d1": "1974", "d2": "1991", "d3": "1932", "dato": "", "alumno": "Inés Cuesta"}, {"id": "INV060", "invento": "google", "correcta": "1998", "d1": "1992", "d2": "2001", "d3": "1989", "dato": "Lo crearon Larry Page y Sergey Brin cuando aún estaban en la universidad", "alumno": "Paula Vives"}, {"id": "INV061", "invento": "CD", "correcta": "1979", "d1": "1970", "d2": "1976", "d3": "1982", "dato": "El primer CD tenía uan capacidad de 74 minutos, es escuchar la novena sinfonía de Beethoven completa.", "alumno": "Aitana Fernández"}, {"id": "INV062", "invento": "codigo QR", "correcta": "1994", "d1": "1993", "d2": "2005", "d3": "2003", "dato": "Se crearon originalmente para identificar piezas de coches en las fabricas", "alumno": "Paula Vives"}, {"id": "INV063", "invento": "Walkman", "correcta": "1979", "d1": "1968", "d2": "1973", "d3": "1984", "dato": "El primer walkman se llamó TPS-L2", "alumno": "Desconocido"}, {"id": "INV064", "invento": "Calculadora electrónica", "correcta": "1961", "d1": "1982", "d2": "1967", "d3": "1978", "dato": "era mucho más grande y pesada que las actuales", "alumno": "Paula Vives"}, {"id": "INV065", "invento": "camara polaroid", "correcta": "1948", "d1": "1970", "d2": "1956", "d3": "1964", "dato": "La creo Edwin Land. Permitia hacer una foto y tenerla revelada en minutos", "alumno": "Paula Vives"}, {"id": "INV066", "invento": "velcro", "correcta": "1955", "d1": "1948", "d2": "1977", "d3": "2000", "dato": "Se inspiró en unas plantas que se quedaban enganchadas a la ropa y al pelo de su perro.", "alumno": "Salva Puchades"}, {"id": "INV067", "invento": "Código QR", "correcta": "1994", "d1": "1970", "d2": "2004", "d3": "1999", "dato": "Se creó originalmente para controlar piezas en las fábricas de automóviles.", "alumno": "Salva Puchades"}];
+
+let deck = [];
+let current = null;
+let mode = 'choose';
+let answered = false;
+let score = { correct: 0, total: 0 };
+
+function shuffledIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function refillDeck(){
+  deck = shuffledIndices(CARDS.length);
+}
+
+function loadScore(){
+  try{
+    const raw = localStorage.getItem('inventos-score');
+    if(raw){ score = JSON.parse(raw); }
+  }catch(e){}
+}
+function saveScore(){
+  try{ localStorage.setItem('inventos-score', JSON.stringify(score)); }catch(e){}
+}
+function renderScore(){
+  document.getElementById('scoreNum').textContent = score.correct + ' / ' + score.total;
+}
+
+function normYear(v){
+  return String(v).trim().toLowerCase().replace(/\s+/g,' ');
+}
+
+function nextCard(){
+  if(deck.length === 0) refillDeck();
+  const idx = deck.pop();
+  current = CARDS[idx];
+  answered = false;
+  renderCard();
+}
+
+function renderCard(){
+  document.getElementById('stampId').textContent = 'Nº ' + current.id.replace('INV','');
+  document.getElementById('authorTag').textContent = current.alumno ? ('investigado por ' + current.alumno) : '';
+  document.getElementById('inventoName').textContent = current.invento;
+
+  document.getElementById('reveal').classList.remove('show');
+  document.getElementById('nextBtn').classList.remove('show');
+
+  if(mode === 'choose'){
+    const opts = [current.correcta, current.d1, current.d2, current.d3]
+      .filter(v => v !== '');
+    const order = shuffledIndices(opts.length);
+    const grid = document.getElementById('optionsGrid');
+    grid.innerHTML = '';
+    order.forEach(i => {
+      const btn = document.createElement('button');
+      btn.className = 'opt';
+      btn.textContent = opts[i];
+      btn.addEventListener('click', () => handleChoose(opts[i], btn));
+      grid.appendChild(btn);
+    });
+  } else {
+    const input = document.getElementById('typeInput');
+    input.value = '';
+    input.disabled = false;
+    input.classList.remove('is-correct','is-wrong');
+    document.getElementById('checkBtn').disabled = false;
+    setTimeout(()=>input.focus(), 30);
+  }
+}
+
+function reveal(isCorrect){
+  answered = true;
+  score.total += 1;
+  if(isCorrect) score.correct += 1;
+  saveScore();
+  renderScore();
+
+  const verdict = document.getElementById('verdict');
+  verdict.textContent = isCorrect ? '¡Correcto!' : 'No era esa';
+  verdict.className = 'reveal-verdict ' + (isCorrect ? 'ok' : 'bad');
+  document.getElementById('correctYear').textContent = current.correcta;
+
+  const fact = document.getElementById('fact');
+  if(current.dato && current.dato.trim() !== ''){
+    fact.textContent = current.dato;
+    fact.classList.remove('empty');
+  } else {
+    fact.textContent = 'Este invento no tiene ningún dato curioso recogido todavía.';
+    fact.classList.add('empty');
+  }
+
+  document.getElementById('reveal').classList.add('show');
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function handleChoose(value, btn){
+  if(answered) return;
+  const buttons = Array.from(document.querySelectorAll('.opt'));
+  const isCorrect = normYear(value) === normYear(current.correcta);
+  buttons.forEach(b => {
+    b.disabled = true;
+    if(normYear(b.textContent) === normYear(current.correcta)){
+      b.classList.add('is-correct');
+    } else if(b === btn){
+      b.classList.add('is-wrong');
+    } else {
+      b.classList.add('is-muted');
+    }
+  });
+  reveal(isCorrect);
+}
+
+function handleType(){
+  if(answered) return;
+  const input = document.getElementById('typeInput');
+  const val = input.value.trim();
+  if(val === '') { input.focus(); return; }
+  const isCorrect = normYear(val) === normYear(current.correcta);
+  input.disabled = true;
+  document.getElementById('checkBtn').disabled = true;
+  input.classList.add(isCorrect ? 'is-correct' : 'is-wrong');
+  reveal(isCorrect);
+}
+
+document.getElementById('checkBtn').addEventListener('click', handleType);
+document.getElementById('typeInput').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') handleType();
+});
+document.getElementById('nextBtn').addEventListener('click', nextCard);
+
+function setMode(newMode){
+  mode = newMode;
+  document.getElementById('tabChoose').classList.toggle('active', mode==='choose');
+  document.getElementById('tabChoose').setAttribute('aria-selected', mode==='choose');
+  document.getElementById('tabType').classList.toggle('active', mode==='type');
+  document.getElementById('tabType').setAttribute('aria-selected', mode==='type');
+  document.getElementById('chooseMode').style.display = mode==='choose' ? 'block' : 'none';
+  document.getElementById('typeMode').style.display = mode==='type' ? 'block' : 'none';
+  renderCard();
+}
+document.getElementById('tabChoose').addEventListener('click', () => setMode('choose'));
+document.getElementById('tabType').addEventListener('click', () => setMode('type'));
+
+loadScore();
+renderScore();
+refillDeck();
+nextCard();
+</script>
+</body>
+</html>
